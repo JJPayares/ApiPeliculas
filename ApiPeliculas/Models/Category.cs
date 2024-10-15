@@ -10,7 +10,7 @@ namespace ApiPeliculas.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public DateTime FechaCreacion { get; set; }
+        public DateTime CreationDate { get; set; }
     }
     
 }
