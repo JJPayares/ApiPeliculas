@@ -15,42 +15,49 @@ namespace ApiPeliculas.Repository
 
         public bool CreateCategory(Category category)
         {
-            throw new NotImplementedException();
+            category.CreationDate = DateTime.Now;
+            _db.Categories.Add(category);
+            return Save();
         }
 
-        public bool DeleteCategory(int categoryId)
+        public bool DeleteCategory(Category category)
         {
-            throw new NotImplementedException();
+            _db.Categories.Remove(category);
+            return Save();
         }
 
         public bool ExistsCategory(int categoryId)
         {
-            throw new NotImplementedException();
+            return _db.Categories.Any(c => c.Id == categoryId);
         }
 
         public bool ExistsCategory(string categoryName)
         {
-            throw new NotImplementedException();
+            return _db.Categories.Any(
+                c => c.Name.ToLower().Trim() == categoryName.ToLower().Trim());
+
         }
 
         public ICollection<Category> GetCategories()
         {
-            throw new NotImplementedException();
+            return _db.Categories.OrderBy(c => c.Id).ToList();
         }
 
         public Category GetCategory(int categoryId)
         {
-            throw new NotImplementedException();
-        }
+            return _db.Categories.FirstOrDefault(c => c.Id == categoryId);
+                }
 
         public bool Save()
         {
-            throw new NotImplementedException();
+            return _db.SaveChanges() >= 0 ? true : false;
         }
 
         public bool UpdateCategory(Category category)
         {
-            throw new NotImplementedException();
+            category.CreationDate = DateTime.Now;
+            _db.Categories.Update(category);
+            return Save();
         }
     }
 }
