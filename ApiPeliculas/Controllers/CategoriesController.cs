@@ -1,4 +1,5 @@
-﻿using ApiPeliculas.Models.Dtos;
+﻿using ApiPeliculas.Models;
+using ApiPeliculas.Models.Dtos;
 using ApiPeliculas.Repository.IRepository;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -21,8 +22,8 @@ namespace ApiPeliculas.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult GetCategories() 
         { 
             var categoriesList = _categoryRepository.GetCategories();
@@ -37,9 +38,9 @@ namespace ApiPeliculas.Controllers
 
     
         [HttpGet("{categoryId:int}", Name ="GetCategory")]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetCategory( int categoryId)
         {
@@ -55,9 +56,9 @@ namespace ApiPeliculas.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateCategory([FromBody] CreateCategoryDto createCategoryDto)
         {
             if (!ModelState.IsValid || createCategoryDto == null) {
@@ -68,6 +69,17 @@ namespace ApiPeliculas.Controllers
                 ModelState.AddModelError("", "Category already exists.");
                 return StatusCode(404, ModelState);
             }
+
+            var category = _mapper.Map<Category>(createCategoryDto);
+
+            if (!_categoryRepository.CreateCategory(category)) 
+            {
+                ModelState.AddModelError("",$"Something went wrong saving the record {category.Name}");
+                return StatusCode(404, ModelState);
+            }
+
+            return CreatedAtRoute("GetCategory", new {categoryId = category.Id}, category);
+
         }
     }
 }
