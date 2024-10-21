@@ -132,10 +132,8 @@ namespace ApiPeliculas.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            var existsCategory = _categoryRepository.GetCategory(categoryId);
-
-            if (existsCategory == null)
+          
+            if (!_categoryRepository.ExistsCategory(categoryId))
             {
                 return NotFound($"Not Founded any category whit id {categoryId}.");
             }
@@ -152,6 +150,33 @@ namespace ApiPeliculas.Controllers
 
         }
 
+
+
+
+        [HttpDelete("{categoryId:int}", Name = "DeleteCategory")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult DeleteCategory(int categoryId)
+        {
+            if (!_categoryRepository.ExistsCategory(categoryId))
+            {
+                return NotFound();
+            }
+
+            var category = _categoryRepository.GetCategory(categoryId);
+
+            if (!_categoryRepository.DeleteCategory(category))
+            {
+                ModelState.AddModelError("", $"Somethiogn went wrong deleting the record {category.Name}.");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+
+        }
 
     }
 }
