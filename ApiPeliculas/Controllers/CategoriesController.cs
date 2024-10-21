@@ -54,6 +54,7 @@ namespace ApiPeliculas.Controllers
             return Ok(categoryItemDto);
         }
 
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -74,12 +75,83 @@ namespace ApiPeliculas.Controllers
 
             if (!_categoryRepository.CreateCategory(category)) 
             {
-                ModelState.AddModelError("",$"Something went wrong saving the record {category.Name}");
+                ModelState.AddModelError("",$"Something went wrong saving the record {category.Name}.");
                 return StatusCode(404, ModelState);
             }
 
             return CreatedAtRoute("GetCategory", new {categoryId = category.Id}, category);
 
         }
+
+
+
+        [HttpPatch("{categoryId:int}", Name = "PatchCategory")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult PatchCategory(int categoryId, [FromBody] CategoryDto patchCategoryDto)
+        {
+
+            if (!ModelState.IsValid || patchCategoryDto == null || categoryId != patchCategoryDto.Id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var existsCategory = _categoryRepository.GetCategory(categoryId);
+
+            if (existsCategory == null)
+            {
+                return NotFound($"Not Founded any category whit id {categoryId}.");
+            }
+
+            var category = _mapper.Map<Category>(patchCategoryDto);
+
+            if (!_categoryRepository.UpdateCategory(category))
+            {
+                ModelState.AddModelError("", $"Somethiogn went wrong updating the record {category.Name}.");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+
+        }
+
+
+        [HttpPut("{categoryId:int}", Name = "PutCategory")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult PutCategory(int categoryId, [FromBody] CategoryDto putCategoryDto)
+        {
+
+            if (!ModelState.IsValid || putCategoryDto == null || categoryId != putCategoryDto.Id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var existsCategory = _categoryRepository.GetCategory(categoryId);
+
+            if (existsCategory == null)
+            {
+                return NotFound($"Not Founded any category whit id {categoryId}.");
+            }
+
+            var category = _mapper.Map<Category>(putCategoryDto);
+
+            if (!_categoryRepository.UpdateCategory(category))
+            {
+                ModelState.AddModelError("", $"Somethiogn went wrong updating the record {category.Name}.");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+
+        }
+
+
     }
 }

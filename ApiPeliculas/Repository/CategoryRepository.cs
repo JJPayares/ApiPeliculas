@@ -56,7 +56,16 @@ namespace ApiPeliculas.Repository
         public bool UpdateCategory(Category category)
         {
             category.CreationDate = DateTime.Now;
-            _db.Categories.Update(category);
+            // validate if category exists before update
+            var categoryExists = _db.Categories.Find(category.Id);
+            if (categoryExists != null)
+            {
+                _db.Entry(categoryExists).CurrentValues.SetValues(category);
+            }
+            else
+            {
+                _db.Categories.Update(category);
+            }
             return Save();
         }
     }
