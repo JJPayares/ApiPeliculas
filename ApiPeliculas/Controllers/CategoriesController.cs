@@ -99,9 +99,8 @@ namespace ApiPeliculas.Controllers
                 return BadRequest(ModelState);
             }
 
-            var existsCategory = _categoryRepository.GetCategory(categoryId);
 
-            if (existsCategory == null)
+            if (!_categoryRepository.ExistsCategory(categoryId))
             {
                 return NotFound($"Not Founded any category whit id {categoryId}.");
             }
