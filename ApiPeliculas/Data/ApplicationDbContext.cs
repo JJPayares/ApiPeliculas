@@ -8,8 +8,9 @@ public class ApplicationDbContext :DbContext
         {
         }
 
-        // Pasar todos los modelos
+        // Add all models
         public DbSet<Category> Categories {  get; set; }
+        public DbSet<Movie> Movies {  get; set; }
     }
 
 }
