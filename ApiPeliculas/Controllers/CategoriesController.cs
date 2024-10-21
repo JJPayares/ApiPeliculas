@@ -35,7 +35,7 @@ namespace ApiPeliculas.Controllers
         }
 
 
-        [HttpGet]
+    
         [HttpGet("{categoryId:int}", Name ="GetCategory")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -43,6 +43,7 @@ namespace ApiPeliculas.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetCategory( int categoryId)
         {
+
             var categoryItem = _categoryRepository.GetCategory(categoryId);
 
             if (categoryItem == null) { return NotFound(); }
@@ -50,6 +51,23 @@ namespace ApiPeliculas.Controllers
             var categoryItemDto = _mapper.Map<CategoryDto>(categoryItem);
 
             return Ok(categoryItemDto);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public IActionResult CreateCategory([FromBody] CreateCategoryDto createCategoryDto)
+        {
+            if (!ModelState.IsValid || createCategoryDto == null) {
+                return BadRequest(ModelState);
+            }
+
+            if (_categoryRepository.ExistsCategory(createCategoryDto.Name)) {
+                ModelState.AddModelError("", "Category already exists.");
+                return StatusCode(404, ModelState);
+            }
         }
     }
 }
