@@ -22,6 +22,13 @@ builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
+//CORS Policy
+builder.Services.AddCors(p => p.AddPolicy("CORSPolicy", build =>
+{
+    build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
+
+
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(PeliculasMapper));
 
@@ -35,6 +42,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// CORS Support
+app.UseCors("CORSPolicy");
 
 app.UseAuthorization();
 
