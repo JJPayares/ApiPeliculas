@@ -47,10 +47,10 @@ namespace ApiPeliculas.Repository
         {
             var encryptedPassword = getMD5(loginUserDto.Password);
             var user = _db.Users.FirstOrDefault(
-                                 u => u.UserName.ToLower() == encryptedPassword.ToLower());
+                                 u => u.Password.ToLower() == encryptedPassword.ToLower());
             if (user == null) 
             {
-                return new LoginResponseUserDto()
+                return  new LoginResponseUserDto()
                 {
                     Token = "",
                     User = null
@@ -74,7 +74,7 @@ namespace ApiPeliculas.Repository
 
             var token = tokenManager.CreateToken(tokenDescriptor);
 
-            LoginResponseUserDto loginResponseUserDto = new LoginResponseUserDto()
+            LoginResponseUserDto loginResponseUserDto =  new LoginResponseUserDto()
             {
                 Token = tokenManager.WriteToken(token),
                 User = user
