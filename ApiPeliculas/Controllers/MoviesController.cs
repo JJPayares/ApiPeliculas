@@ -144,5 +144,53 @@ namespace ApiPeliculas.Controllers
             return NoContent();
 
         }
+
+
+
+        [HttpGet("GetMoviesByCategory/{categoryId:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetMoviesByCategory(int categoryId) 
+        {
+            var moviesList = _movieRepository.GetMoviesByCategory(categoryId);
+
+            if (moviesList == null) 
+            {
+                return NotFound();
+            }
+
+            var movieItem = new List<MovieDto>();
+            foreach (var movie in moviesList) 
+            {
+                movieItem.Add(_mapper.Map<MovieDto>(movie));
+            }
+            return Ok(movieItem);
+        }
+
+
+        [HttpGet("FindMovies")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult FindMovies(string param)
+        {
+            try 
+            {
+                var response = _movieRepository.FindMovies(param);
+                if (response.Any())
+                {
+                    return Ok(response);
+                }
+
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error looking for search param {param}");
+            }
+
+            
+        }
     }
 }
